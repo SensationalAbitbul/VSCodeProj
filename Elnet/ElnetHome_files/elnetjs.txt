@@ -1,0 +1,87 @@
+var f_StamImg = new Image();
+ function ReplaceImage(f_NewImg) {
+	 var f_Img = document.getElementById('imgData');
+
+	 if (f_NewImg == "")
+	 {
+	 		f_NewImg = "tft.bmp.";
+	 } else {
+	 		f_NewImg += "?" + (new Date()).getTime();
+	 }
+
+	 if (f_Img){
+	 	f_Img.src = f_NewImg;
+	 }
+ }
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    switch (e.keyCode) {
+    	case 13:
+    		ImgClick (e,0);
+    		break;
+    	case 27:
+    		ImgClick (e,5);
+    		break;
+    	case 37:
+    		ImgClick (e,1);
+    		break;
+    	case 38:
+    		ImgClick (e,3);
+    		break;
+    	case 39:
+    		ImgClick (e,2);
+    		break;
+    	case 40:
+    		ImgClick (e,4);
+    		break;
+    }
+}
+
+ function Init(f_Interval) {
+
+ var default_interval = 5000;
+
+ if (/fast$/.test(window.location.href)){
+    default_interval = 1500;
+ }
+
+ if (f_Interval == null)  {
+   setInterval ('ReplaceImage("tft.bmp");',default_interval);
+  } else {
+   setInterval ('ReplaceImage("tft.bmp");',f_Interval);
+  }
+
+  document.onkeydown = checkKey;
+ }
+
+function ImgClick (ev,index) {
+	var sndStr = "key.htm?";
+
+	if (index>9) {
+		sndStr += "L=" + (index-10) ;
+	}else{
+		if (ev.ctrlKey || ev.altKey || ev.shiftKey) {
+			sndStr += "f=" + index ;
+		} else {
+			sndStr += "F=" + index ;
+		}
+	}
+	sndStr += "." + (new Date()).getTime();
+
+	if (window.XMLHttpRequest) { // Mozilla, Safari,...
+		xmlhttp = new XMLHttpRequest();
+	} else if (window.ActiveXObject) { // IE
+		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+    xmlhttp.open("GET", sndStr);
+
+    xmlhttp.onreadystatechange = function() {
+    }
+
+    xmlhttp.send(null);
+	setTimeout ('ReplaceImage("tft.bmp")',1500);
+}

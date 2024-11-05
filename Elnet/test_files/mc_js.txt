@@ -1,0 +1,97 @@
+
+        function $(x) {
+            return document.getElementById(x);
+        }
+
+        function ajaxUpdater(id, url) {
+            if (window.XMLHttpRequest) { // Mozilla, Safari,...
+                xmlhttp = new XMLHttpRequest();
+            } else if (window.ActiveXObject) { // IE
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            xmlhttp.open("GET", url);
+
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4){
+                    if (id != "" && xmlhttp.responseText && xmlhttp.responseText != '') {
+                        $(id).innerHTML = xmlhttp.responseText;
+                    }
+                }
+            }
+
+            xmlhttp.send(null);
+        }
+
+        function ajaxUpdatePage(url) {
+            if (window.XMLHttpRequest) { // Mozilla, Safari,...
+                xmlhttp = new XMLHttpRequest();
+            } else if (window.ActiveXObject) { // IE
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            xmlhttp.open("GET", url);
+
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4) {
+                    var data = eval(xmlhttp.responseText);
+
+                    for (var i in data) {
+                        try {
+                            $(data[i][0]).innerHTML = data[i][1];
+                        } catch (e) {
+                             // nothing
+                        }
+                    }
+                    if (typeof _ajax_call_num != 'undefined') {
+                        setTimeout('get_next_ajax_call()',1000);
+                    }
+                }
+            }
+
+            xmlhttp.send(null);
+        }
+
+        function send_key (ev,index) {
+            if (ev.ctrlKey) {
+                command = "f=" + index ;
+            } else {
+                command = "F=" + index ;
+            }
+
+            ajaxUpdater("", "key.cgi?" + command);
+
+            setTimeout ("update_disp();", 1000);
+        }
+
+        function update_disp() {
+            disp_file = "text.html?" + (new Date()).getTime();
+            ajaxUpdater("display", disp_file);
+        }
+
+        function init() {
+
+					var default_interval = 10000;
+
+					 if (/fast$/.test(window.location.href)){
+					    default_interval = 1500;
+					 }
+
+            update_disp();
+            setInterval ("update_disp();", default_interval);
+        }
+
+        function update_disp_data(p) {
+            disp_file = "data.html?p=" + p + "&t=" + (new Date()).getTime();
+            ajaxUpdatePage(disp_file);
+        }
+
+        function get_next_ajax_call(){
+            p = _ajax_calls[_ajax_call_num]
+            _ajax_call_num++
+            if (_ajax_call_num >= _ajax_calls.length){
+                _ajax_call_num = 0;
+            }
+            update_disp_data(p);
+        }
+
